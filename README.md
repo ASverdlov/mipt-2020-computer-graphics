@@ -5,7 +5,7 @@
 1 | 08 февраля | [GL-0: Принцип организации работы GPU. GPGPU. Compute Shaders. Query Object. Shared Memory.](https://paper.dropbox.com/doc/GL-0-GPU.-GPGPU.-Compute-Shaders.-Query-Object.-Shared-Memory.--AuhScAltZdTZrCrudrcsjHR0AQ-07Mp3JQYv4Xp01cQdq0rJ)
 2 | 15 февраля | GL-0; [GL-1: OpenGL pipeline](https://paper.dropbox.com/doc/GL-1-OpenGL-pipeline--AuhMs_QlYBVKD2CdWvAJDHGUAQ-esCO87TYKGLujgajb6Mk4);
 - | 22 февраля | Неучебный день - олимпиада МФТИ
-3 | 29 февраля | GL-1; GL-2
+3 | 29 февраля | [GL-2: Interpolation, shaders, attributes, uniforms](https://paper.dropbox.com/doc/GL-2-Interpolation-shaders-attributes-uniforms--AvbQmRJ1GHGie9LdS_koozaqAQ-Mrx0ULAF9rkatB3apEAnf)
 4 | 7 марта | GL-3: Texturing; GL-4: Lighting
 5 | 14 марта | Приём задания №1
 6 | 21 марта | GL-5
