@@ -6,9 +6,9 @@
 2 | 15 февраля | GL-0; [GL-1: OpenGL pipeline](https://paper.dropbox.com/doc/GL-1-OpenGL-pipeline--AuhMs_QlYBVKD2CdWvAJDHGUAQ-esCO87TYKGLujgajb6Mk4);
 - | 22 февраля | Неучебный день - олимпиада МФТИ
 3 | 29 февраля | [GL-2: Interpolation, shaders, attributes, uniforms](https://paper.dropbox.com/doc/GL-2-Interpolation-shaders-attributes-uniforms--AvbQmRJ1GHGie9LdS_koozaqAQ-Mrx0ULAF9rkatB3apEAnf)
-4 | 7 марта | GL-3: Texturing; GL-4: Lighting
+4 | 7 марта | [GL-4: Texturing](https://paper.dropbox.com/doc/GL-4-Texturing--Awh1EJlyjfWg9Zj2YOSg9XDIAQ-SywTp5W1FC5K9jr7NneKJ)
 5 | 14 марта | Приём задания №1
-6 | 21 марта | GL-5
+6 | 21 марта | GL-4: Texturing (продолжение)
 7 | 28 марта | GL-6
 8 | 4 апреля | GL-7
 9 | 11 апреля | GL-8; GL-9
