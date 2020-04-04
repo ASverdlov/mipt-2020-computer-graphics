@@ -9,15 +9,15 @@
 4 | 7 марта | [GL-4: Texturing](https://paper.dropbox.com/doc/GL-4-Texturing--Awh1EJlyjfWg9Zj2YOSg9XDIAQ-SywTp5W1FC5K9jr7NneKJ)
 5 | 14 марта | Приём задания №1
 6 | 21 марта | GL-4: Texturing (продолжение)
-7 | 28 марта | GL-6
-8 | 4 апреля | GL-7
-9 | 11 апреля | GL-8; GL-9
-10 | 18 апреля | Приём задания №2
-11 | 25 апреля | GL-10
-- | 2 мая | ----
+7 | 28 марта | каникулы
+8 | 4 апреля | [GL-5: Depth buffer, viewport, stencil, blending](https://paper.dropbox.com/doc/GL-5-Depth-buffer-viewport-stencil-blending.--AxZ5MEZhMKk_sm1cr8InGJ3gAQ-HU8yEOY0vkpXzbfoiMR3U)
+9 | 11 апреля | мы очень опаздываем; GL-8; GL-9
+10 | 18 апреля | GL-?
+11 | 25 апреля | Приём задания №2
+11,5 | 2 мая | GL-?
 - | 9 мая | День Победы
 12 | 16 мая | GL-11
-13 | 23 мая | Прием задания №3
+13 | 23+ мая | Прием задания №3
 
 ## Краткое руководство по встраиванию
 
