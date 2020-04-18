@@ -48,13 +48,9 @@ struct SurfaceFillinParams {
     float vmax;
 };
 
-const int UPPER_LEFT_POLYGON = 0;
-const int BOTTOM_RIGHT_POLYGON = 1;
-
-void appendNewVertex(std::vector<glm::vec3>& vertices, std::vector<glm::vec3>& normals, std::vector<glm::vec2>& texcoords,
-        SurfaceFillinParams& params, int ustep, int vstep, float ucnt, float vcnt, int polygon, int vertexNumber) {
-    assert(0 <= vertexNumber && vertexNumber < 3);
-    assert(0 <= polygon && polygon <= 1);
+void fillInSurfaceAttributes(std::vector<glm::vec3>& vertices, std::vector<glm::vec3>& normals, std::vector<glm::vec2>& texcoords, SurfaceFillinParams params) {
+    const float ucnt = 1000;
+    const float vcnt = 1000;
 
     const float aa = params.aa;
     const float umin = params.umin;
@@ -68,92 +64,59 @@ void appendNewVertex(std::vector<glm::vec3>& vertices, std::vector<glm::vec3>& n
     const float txdelta = 1.0f / ucnt;
     const float tydelta = 1.0f / vcnt;
 
-    float u = umin + ustep * udelta;
-    float v = vmin + vstep * vdelta;
-
-    // square with (u, v) in upper-left angle
-    auto aaPoint = kleinPosition(u, v, aa);
-    auto abPoint = kleinPosition(u, v + vdelta, aa);
-    auto baPoint = kleinPosition(u + udelta, v, aa);
-    auto bbPoint = kleinPosition(u + udelta, v + vdelta, aa);
-
-    float tx = txdelta * ustep;
-    float ty = tydelta * vstep;
-
-    if (polygon == UPPER_LEFT_POLYGON) {
-        // upper-left triangle
-        switch (vertexNumber) {
-            case 0:
-                vertices.push_back(aaPoint);
-                normals.push_back(glm::normalize(glm::cross(baPoint - aaPoint, abPoint - aaPoint)));
-                texcoords.emplace_back(tx, ty);
-                break;
-            case 1:
-                vertices.push_back(abPoint);
-                normals.push_back(glm::normalize(glm::cross(aaPoint - abPoint, bbPoint - abPoint)));
-                texcoords.emplace_back(tx, ty + tydelta);
-                break;
-            case 2:
-                vertices.push_back(baPoint);
-                normals.push_back(glm::normalize(glm::cross(bbPoint - baPoint, aaPoint - baPoint)));
-                texcoords.emplace_back(tx + txdelta, ty);
-                break;
-            default:
-                assert(false);
-        }
-    } else {
-        assert(polygon == BOTTOM_RIGHT_POLYGON);
-
-        // lower-right triangle
-        switch (vertexNumber) {
-            case 0:
-                vertices.push_back(bbPoint);
-                normals.push_back(glm::normalize(glm::cross(abPoint - bbPoint, baPoint - bbPoint)));
-                texcoords.emplace_back(tx + txdelta, ty + tydelta);
-                break;
-            case 1:
-                vertices.push_back(baPoint);
-                normals.push_back(glm::normalize(glm::cross(bbPoint - baPoint, aaPoint - baPoint)));
-                texcoords.emplace_back(tx + txdelta, ty);
-                break;
-            case 2:
-                vertices.push_back(abPoint);
-                normals.push_back(glm::normalize(glm::cross(aaPoint - abPoint, bbPoint - abPoint)));
-                texcoords.emplace_back(tx, ty + tydelta);
-                break;
-            default:
-                assert(false);
-        }
-    }
-
-}
-
-void fillInKleinBottle(std::vector<glm::vec3>& vertices, std::vector<glm::vec3>& normals, std::vector<glm::vec2>& texcoords, SurfaceFillinParams params) {
-    const float ucnt = 1000;
-    const float vcnt = 1000;
-
     for (int ustep = 0; ustep < ucnt; ++ustep) {
         for (int vstep = 0; vstep < vcnt; ++vstep) {
-            appendNewVertex(vertices, normals, texcoords, params, ustep, vstep, ucnt, vcnt, UPPER_LEFT_POLYGON, 0);
-            appendNewVertex(vertices, normals, texcoords, params, ustep, vstep, ucnt, vcnt, UPPER_LEFT_POLYGON, 1);
-            appendNewVertex(vertices, normals, texcoords, params, ustep, vstep, ucnt, vcnt, UPPER_LEFT_POLYGON, 2);
+            float u = umin + ustep * udelta;
+            float v = vmin + vstep * vdelta;
 
-            appendNewVertex(vertices, normals, texcoords, params, ustep, vstep, ucnt, vcnt, BOTTOM_RIGHT_POLYGON, 0);
-            appendNewVertex(vertices, normals, texcoords, params, ustep, vstep, ucnt, vcnt, BOTTOM_RIGHT_POLYGON, 1);
-            appendNewVertex(vertices, normals, texcoords, params, ustep, vstep, ucnt, vcnt, BOTTOM_RIGHT_POLYGON, 2);
+            // square with (u, v) in upper-left angle
+            auto aaPoint = kleinPosition(u, v, aa);
+            auto abPoint = kleinPosition(u, v + vdelta, aa);
+            auto baPoint = kleinPosition(u + udelta, v, aa);
+            auto bbPoint = kleinPosition(u + udelta, v + vdelta, aa);
+
+            float tx = txdelta * ustep;
+            float ty = tydelta * vstep;
+
+            // upper-left triangle
+            vertices.push_back(aaPoint);
+            vertices.push_back(abPoint);
+            vertices.push_back(baPoint);
+
+            normals.push_back(glm::normalize(glm::cross(baPoint - aaPoint, abPoint - aaPoint)));
+            normals.push_back(glm::normalize(glm::cross(aaPoint - abPoint, bbPoint - abPoint)));
+            normals.push_back(glm::normalize(glm::cross(bbPoint - baPoint, aaPoint - baPoint)));
+
+            texcoords.emplace_back(tx, ty);
+            texcoords.emplace_back(tx, ty + tydelta);
+            texcoords.emplace_back(tx + txdelta, ty);
+
+            // lower-right triangle
+            vertices.push_back(bbPoint);
+            vertices.push_back(baPoint);
+            vertices.push_back(abPoint);
+
+            normals.push_back(glm::normalize(glm::cross(abPoint - bbPoint, baPoint - bbPoint)));
+            normals.push_back(glm::normalize(glm::cross(bbPoint - baPoint, aaPoint - baPoint)));
+            normals.push_back(glm::normalize(glm::cross(aaPoint - abPoint, bbPoint - abPoint)));
+
+            texcoords.emplace_back(tx + txdelta, ty + tydelta);
+            texcoords.emplace_back(tx + txdelta, ty);
+            texcoords.emplace_back(tx, ty + tydelta);
         }
     }
 }
 
 MeshPtr makeKleinBottle(float size)
 {
-    std::vector<glm::vec3> vertices;
-    std::vector<glm::vec3> normals;
+    std::vector<glm::vec3> vertices1;
+    std::vector<glm::vec3> normals1;
+    std::vector<glm::vec3> vertices2;
+    std::vector<glm::vec3> normals2;
     std::vector<glm::vec2> texcoords;
 
     auto kleinParams = SurfaceFillinParams{
         kleinPosition,
-
         3.0f,                       // aa
         0.0f,                     // umin
         2.0f * glm::pi<float>(),  // umax
@@ -163,7 +126,6 @@ MeshPtr makeKleinBottle(float size)
 
     auto moebiusParams = SurfaceFillinParams{
             moebiusPosition,
-
             3.0f,                        // aa
             -0.4f,                     // umin
             0.4f,                     // umax
@@ -171,28 +133,36 @@ MeshPtr makeKleinBottle(float size)
             2.0f * glm::pi<float>(), // vmax
     };
 
-
-    fillInKleinBottle(vertices, normals, texcoords, kleinParams);
+    fillInSurfaceAttributes(vertices1, normals1, texcoords, kleinParams);
+    fillInSurfaceAttributes(vertices2, normals2, texcoords, moebiusParams);
 
     //----------------------------------------
 
     DataBufferPtr buf0 = std::make_shared<DataBuffer>(GL_ARRAY_BUFFER);
-    buf0->setData(vertices.size() * sizeof(float) * 3, vertices.data());
+    buf0->setData(vertices1.size() * sizeof(float) * 3, vertices1.data());
 
     DataBufferPtr buf1 = std::make_shared<DataBuffer>(GL_ARRAY_BUFFER);
-    buf1->setData(normals.size() * sizeof(float) * 3, normals.data());
+    buf1->setData(normals1.size() * sizeof(float) * 3, normals1.data());
 
     DataBufferPtr buf2 = std::make_shared<DataBuffer>(GL_ARRAY_BUFFER);
-    buf2->setData(texcoords.size() * sizeof(float) * 2, texcoords.data());
+    buf2->setData(vertices2.size() * sizeof(float) * 3, vertices2.data());
+
+    DataBufferPtr buf3 = std::make_shared<DataBuffer>(GL_ARRAY_BUFFER);
+    buf3->setData(normals2.size() * sizeof(float) * 3, normals2.data());
+
+    DataBufferPtr buf4 = std::make_shared<DataBuffer>(GL_ARRAY_BUFFER);
+    buf4->setData(texcoords.size() * sizeof(float) * 2, texcoords.data());
 
     MeshPtr mesh = std::make_shared<Mesh>();
     mesh->setAttribute(0, 3, GL_FLOAT, GL_FALSE, 0, 0, buf0);
     mesh->setAttribute(1, 3, GL_FLOAT, GL_FALSE, 0, 0, buf1);
-    mesh->setAttribute(2, 2, GL_FLOAT, GL_FALSE, 0, 0, buf2);
+    mesh->setAttribute(2, 3, GL_FLOAT, GL_FALSE, 0, 0, buf2);
+    mesh->setAttribute(3, 3, GL_FLOAT, GL_FALSE, 0, 0, buf3);
+    mesh->setAttribute(4, 2, GL_FLOAT, GL_FALSE, 0, 0, buf4);
     mesh->setPrimitiveType(GL_TRIANGLES);
-    mesh->setVertexCount(vertices.size());
+    mesh->setVertexCount(vertices1.size());
 
-    std::cout << "Klein bottle is created with " << vertices.size() << " vertices\n";
+    std::cout << "Klein bottle is created with " << vertices1.size() << " vertices\n";
 
     return mesh;
 }
@@ -201,7 +171,9 @@ MeshPtr makeKleinBottle(float size)
 class SampleApplication : public Application
 {
 public:
-    float animationSpeed = 0.05f;
+    float veinPulse = 0.02f;
+    float morphismSpeed = 0.01f;
+
     uint64_t frames;
 
     MeshPtr _kleinBottle;
@@ -312,7 +284,8 @@ public:
 
             if (ImGui::CollapsingHeader("Klein Bottle"))
             {
-                ImGui::SliderFloat("animation speed", &animationSpeed, 0.0f, 0.1f);
+                ImGui::SliderFloat("vein pulse", &veinPulse, 0.0f, 0.1f);
+                ImGui::SliderFloat("morphism speed", &morphismSpeed, 0.0f, 0.1f);
             }
 
         }
@@ -396,7 +369,8 @@ public:
         {
             _commonShader->setMat4Uniform("modelMatrix", _kleinBottle->modelMatrix());
             _commonShader->setMat3Uniform("normalToCameraMatrix", glm::transpose(glm::inverse(glm::mat3(camera.viewMatrix * _kleinBottle->modelMatrix()))));
-            _commonShader->setFloatUniform("alphaScaler", alphaScalerForNow());
+            _commonShader->setFloatUniform("alphaScaler", veinAlphaForNow());
+            _commonShader->setFloatUniform("morphismAlpha", morphismAlphaForNow());
 
             _kleinBottle->draw();
         }
@@ -417,8 +391,12 @@ public:
         glUseProgram(0);
     }
 
-    float alphaScalerForNow() const {
-        return 0.5f * glm::sin(animationSpeed * frames) + 0.5f;
+    float veinAlphaForNow() const {
+        return 0.5f * glm::sin(veinPulse * frames) + 0.5f;
+    }
+
+    float morphismAlphaForNow() const {
+        return 0.5f * glm::sin(morphismSpeed * frames) + 0.5f;
     }
 };
 
