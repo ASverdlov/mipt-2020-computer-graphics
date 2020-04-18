@@ -219,6 +219,12 @@ public:
                 ImGui::SliderFloat("phi", &_phi, 0.0f, 2.0f * glm::pi<float>());
                 ImGui::SliderFloat("theta", &_theta, 0.0f, glm::pi<float>());
             }
+
+            if (ImGui::CollapsingHeader("Klein Bottle"))
+            {
+                ImGui::SliderFloat("animation speed", &animationSpeed, 0.0f, 0.1f);
+            }
+
         }
         ImGui::End();
     }
