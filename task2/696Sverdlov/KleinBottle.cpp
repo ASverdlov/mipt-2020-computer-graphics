@@ -108,12 +108,12 @@ MeshPtr makeKleinBottle(float size)
 }
 
 
-/**
-2 виртуальный камеры и 2 вьюпорта
-*/
 class SampleApplication : public Application
 {
 public:
+    float animationSpeed = 0.05f;
+    uint64_t frames;
+
     MeshPtr _kleinBottle;
     MeshPtr _backgroundCube;
 
@@ -131,7 +131,8 @@ public:
 
     LightInfo _light;
 
-    TexturePtr _brickTex;
+    TexturePtr _veinsTex;
+    TexturePtr _snakeSkinTex;
     TexturePtr _cubeTex;
 
     GLuint _sampler;
@@ -156,7 +157,7 @@ public:
         //=========================================================
         //Инициализация шейдеров
 
-        _commonShader = std::make_shared<ShaderProgram>("696SverdlovData2/shaders/common.vert", "696SverdlovData2/shaders/common.frag");
+        _commonShader = std::make_shared<ShaderProgram>("696SverdlovData2/shaders/klein.vert", "696SverdlovData2/shaders/klein.frag");
         _markerShader = std::make_shared<ShaderProgram>("696SverdlovData2/shaders/marker.vert", "696SverdlovData2/shaders/marker.frag");
         _skyboxShader = std::make_shared<ShaderProgram>("696SverdlovData2/shaders/skybox.vert", "696SverdlovData2/shaders/skybox.frag");
 
@@ -169,7 +170,8 @@ public:
 
         //=========================================================
         //Загрузка и создание текстур
-        _brickTex = loadTexture("696SverdlovData2/images/brick.jpg");
+        _snakeSkinTex = loadTexture("696SverdlovData2/images/snake-skin-2.jpg");
+        _veinsTex = loadTexture("696SverdlovData2/images/veins.png");
         _cubeTex = loadCubeTexture("696SverdlovData2/images/cube");
 
         //=========================================================
@@ -223,6 +225,8 @@ public:
 
     void draw() override
     {
+        ++frames; // для анимации
+
         //Получаем текущие размеры экрана и выставлям вьюпорт
         int width, height;
         glfwGetFramebufferSize(_window, &width, &height);
@@ -278,18 +282,30 @@ public:
         _commonShader->setVec3Uniform("light.Ld", _light.diffuse);
         _commonShader->setVec3Uniform("light.Ls", _light.specular);
 
+        // enable transparency
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
         glActiveTexture(GL_TEXTURE0);  //текстурный юнит 0        
         glBindSampler(0, _sampler);
-        _brickTex->bind();
+        _veinsTex->bind();
         _commonShader->setIntUniform("diffuseTex", 0);
+
+        glActiveTexture(GL_TEXTURE1);
+        glBindSampler(1, _sampler);
+        _snakeSkinTex->bind();
+        _commonShader->setIntUniform("snakeSkinTex", 1);
 
         //Загружаем на видеокарту матрицы модели мешей и запускаем отрисовку
         {
             _commonShader->setMat4Uniform("modelMatrix", _kleinBottle->modelMatrix());
             _commonShader->setMat3Uniform("normalToCameraMatrix", glm::transpose(glm::inverse(glm::mat3(camera.viewMatrix * _kleinBottle->modelMatrix()))));
+            _commonShader->setFloatUniform("alphaScaler", alphaScalerForNow());
 
             _kleinBottle->draw();
         }
+
+        glDisable(GL_BLEND);
 
         //Рисуем маркеры для всех источников света		
         {
@@ -303,6 +319,10 @@ public:
         //Отсоединяем сэмплер и шейдерную программу
         glBindSampler(0, 0);
         glUseProgram(0);
+    }
+
+    float alphaScalerForNow() const {
+        return 0.5f * glm::sin(animationSpeed * frames) + 0.5f;
     }
 };
 

@@ -1,6 +1,8 @@
 #version 330
 
 uniform sampler2D diffuseTex;
+uniform sampler2D snakeSkinTex;
+uniform float alphaScaler; // для анимации
 
 struct LightInfo
 {
@@ -22,8 +24,12 @@ const float shininess = 128.0;
 
 void main()
 {
-	vec3 diffuseColor = texture(diffuseTex, texCoord).rgb;
-	
+	float alpha = texture(diffuseTex, texCoord).a * alphaScaler; // прозрачность вены
+    vec3 veinColor = vec3(1.0, 0.0, 0.0);
+	vec3 snakeSkinColor = texture(snakeSkinTex, texCoord).rgb;
+
+	vec3 diffuseColor = alpha * veinColor + (1.0 - alpha) * snakeSkinColor; // хардкодим красный цвет
+
 	vec3 lightDirCamSpace = light.pos - posCamSpace.xyz; //направление на источник света
 	float distance = length(lightDirCamSpace);
 	lightDirCamSpace = normalize(lightDirCamSpace); //направление на источник света
@@ -45,5 +51,5 @@ void main()
 		color += light.Ls * Ks * blinnTerm;
 	}
 
-	fragColor = vec4(color, 0.5);
+	fragColor = vec4(color, 1.0f);
 }
