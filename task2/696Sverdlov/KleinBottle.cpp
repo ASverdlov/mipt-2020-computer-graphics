@@ -70,10 +70,10 @@ void fillInSurfaceAttributes(std::vector<glm::vec3>& vertices, std::vector<glm::
             float v = vmin + vstep * vdelta;
 
             // square with (u, v) in upper-left angle
-            auto aaPoint = kleinPosition(u, v, aa);
-            auto abPoint = kleinPosition(u, v + vdelta, aa);
-            auto baPoint = kleinPosition(u + udelta, v, aa);
-            auto bbPoint = kleinPosition(u + udelta, v + vdelta, aa);
+            auto aaPoint = params.f(u, v, aa, 0.5f);
+            auto abPoint = params.f(u, v + vdelta, aa, 0.5f);
+            auto baPoint = params.f(u + udelta, v, aa, 0.5f);
+            auto bbPoint = params.f(u + udelta, v + vdelta, aa, 0.5f);
 
             float tx = txdelta * ustep;
             float ty = tydelta * vstep;
