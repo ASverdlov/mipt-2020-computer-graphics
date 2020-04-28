@@ -35,19 +35,20 @@ void main()
 	lightDirCamSpace = normalize(lightDirCamSpace); //направление на источник света
 
 	vec3 normal = normalize(normalCamSpace); //нормализуем нормаль после интерполяции
-	
+	vec3 viewDirection = normalize(-posCamSpace.xyz); //направление на виртуальную камеру (она находится в точке (0.0, 0.0, 0.0))
+	if (dot(normal, viewDirection) <= 0.0) {
+		normal = -normal; // можем предположить, что мы видим поверхность (иначе она просто не отрисуется, и все хорошо)
+	}
+
 	float NdotL = max(dot(normal, lightDirCamSpace.xyz), 0.0); //скалярное произведение (косинус)
-
 	vec3 color = diffuseColor * (light.La + light.Ld * NdotL);
-
 	if (NdotL > 0.0)
 	{			
-		vec3 viewDirection = normalize(-posCamSpace.xyz); //направление на виртуальную камеру (она находится в точке (0.0, 0.0, 0.0))
 		vec3 halfVector = normalize(lightDirCamSpace.xyz + viewDirection); //биссектриса между направлениями на камеру и на источник света
 
 		float blinnTerm = max(dot(normal, halfVector), 0.0); //интенсивность бликового освещения по Блинну				
 		blinnTerm = pow(blinnTerm, shininess); //регулируем размер блика
-		
+
 		color += light.Ls * Ks * blinnTerm;
 	}
 
